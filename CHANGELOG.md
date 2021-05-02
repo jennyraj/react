@@ -1,3 +1,4 @@
+//Working but vallies and peaks are separate, no duplicate handling
 function solve(A)
 {
     //Early returns
@@ -22,7 +23,7 @@ function solve(A)
 
     function findResults() {
         let diff =0;
-        
+
         for (let i = 0; i < valley.length; i++) {
             let x1 = findPrev(peak, valley[i]);
             var x2 = findNext(peak, valley[i]);
