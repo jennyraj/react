@@ -1,5 +1,3 @@
-//Nodes added; still duplicate needs to be fixed
-
 function solve(A) {
     //Early returns
     if (A.length == 2)
@@ -7,23 +5,11 @@ function solve(A) {
 
     let nodes = [];
 
+    debugger;
+
     for (let i = 0; i < A.length; i++) {
 
-        if (isValley(i)) {
-            console.log(`Valley ${i}`);
-
-            let node = nodes.find(x => x.indexes.includes(i))
-
-            if (typeof node !== 'undefined') {
-                node.indexes.push(i);
-            } else {
-                nodes.push({
-                    type: 'V',
-                    indexes: [i]
-                });
-            }
-
-        } else if (isPeak(i)) {
+        if (isPeak(i)) {
             console.log(`Peak ${i}`);
             let node = nodes.find(x => x.indexes.includes(i))
 
@@ -36,9 +22,22 @@ function solve(A) {
                 });
             }
         }
-        else console.log(`Cannot decide: ${i} ${A[i]}`)
+        else if (isValley(i)) {
+            console.log(`Valley ${i}`);
+
+            let node = nodes.find(x => x.indexes.includes(i))
+
+            if (typeof node !== 'undefined') {
+                node.indexes.push(i);
+            } else {
+                nodes.push({
+                    type: 'V',
+                    indexes: [i]
+                });
+            }
+        }
     }
-    return ' FINAL: '+ findResults();
+    return ' FINAL: ' + findResults();
 
     function findResults() {
         let maxDiff = 0;
@@ -47,25 +46,25 @@ function solve(A) {
         let nextPeak;
 
         for (let i = 0; i < nodes.length; i++) {
-            if (nodes[i].type ==='P')
+            if (nodes[i].type === 'P')
                 continue;
 
-            if (i===0)
-                prevPeak={type:'P' ,indexes:[0]}
+            if (i === 0)
+                prevPeak = {type: 'P', indexes: [0]}
             else
-                prevPeak=nodes[i-1];
+                prevPeak = nodes[i - 1];
 
-            if (i=== nodes.length -1)
-                nextPeak={type: 'P', indexes: [0]}
-            else nextPeak=nodes[i+1];
+            if (i === nodes.length - 1)
+                nextPeak = {type: 'P', indexes: [nodes.length-1]}
+            else nextPeak = nodes[i + 1];
 
-            let diff = Math.abs(Math.max(...nextPeak.indexes)  - Math.min(... prevPeak.indexes));
+            let diff = Math.abs(Math.max(...nextPeak.indexes) - Math.min(...prevPeak.indexes));
 
             console.log(`diff ${diff} for node ${i}  `);
-            if (diff > maxDiff )
+            if (diff > maxDiff)
                 maxDiff = diff
         }
-        maxDiff= maxDiff + 1;
+        maxDiff = maxDiff + 1;
         console.log('Max Diff ' + maxDiff);
         return maxDiff;
     }
@@ -73,15 +72,15 @@ function solve(A) {
     //TODO When elements are SAME At the BEGIN/END??
     function isPeak(i) {
         let num = A[i];
-        let left = i - 1;
-        let right = i + 1;
+        let left = A[i - 1];
+        let right = A[i + 1];
 
         //to Pass: GREATER than LEFT /RIGHT NEIGHBORS!
-        if (left >= 0 && num < A[left]) {
+        if ( (i-1) >= 0 && num < left) {
             return false;
         }
 
-        if (right < A.length && num < A[right]) {
+        if ((i+1) < A.length && num < right) {
             return false;
         }
         return true;
@@ -89,15 +88,15 @@ function solve(A) {
 
     function isValley(i) {
         let num = A[i];
-        let left = i - 1;
-        let right = i + 1;
+        let left = A[i - 1];
+        let right = A[i + 1];
 
-        //TO pass: SMALLER than LEFT /RIGHT NEIGHBORS!
-        if (left >= 0 && num > A[left]) {
+        //to Pass: smaller than LEFT /RIGHT NEIGHBORS!
+        if ( (i-1) >= 0 && num > left) {
             return false;
         }
 
-        if (right < A.length && num > A[right]) {
+        if ((i+1) < A.length && num > right) {
             return false;
         }
         return true;
