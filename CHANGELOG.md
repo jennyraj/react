@@ -1,96 +1,107 @@
-//Working but vallies and peaks are separate, no duplicate handling
-function solve(A)
-{
+//Nodes added; still duplicate needs to be fixed
+
+function solve(A) {
     //Early returns
-    if (A.length ==2)
+    if (A.length == 2)
         return 2;
 
-    let valley=[];
-    let peak=[];
-    for(let i= 0;  i< A.length; i++){
+    let nodes = [];
+
+    for (let i = 0; i < A.length; i++) {
 
         if (isValley(i)) {
             console.log(`Valley ${i}`);
-            valley.push(i);
-        }
 
-        else if (isPeak(i)) {
+            let node = nodes.find(x => x.indexes.includes(i))
+
+            if (typeof node !== 'undefined') {
+                node.indexes.push(i);
+            } else {
+                nodes.push({
+                    type: 'V',
+                    indexes: [i]
+                });
+            }
+
+        } else if (isPeak(i)) {
             console.log(`Peak ${i}`);
-            peak.push(i);
+            let node = nodes.find(x => x.indexes.includes(i))
+
+            if (typeof node !== 'undefined') {
+                node.indexes.push(i);
+            } else {
+                nodes.push({
+                    type: 'P',
+                    indexes: [i]
+                });
+            }
         }
+        else console.log(`Cannot decide: ${i} ${A[i]}`)
     }
-    findResults();
+    return ' FINAL: '+ findResults();
 
     function findResults() {
-        let diff =0;
+        let maxDiff = 0;
 
-        for (let i = 0; i < valley.length; i++) {
-            let x1 = findPrev(peak, valley[i]);
-            var x2 = findNext(peak, valley[i]);
-            console.log(`diff ${x1} ${x2} ${x1 - x2}`);
-            if ( Math.abs(x1-x2) > diff)
-                diff= Math.abs(x1-x2);
-       }
-        console.log('Max Diff '+ (diff+1));
+        let prevPeak;
+        let nextPeak;
+
+        for (let i = 0; i < nodes.length; i++) {
+            if (nodes[i].type ==='P')
+                continue;
+
+            if (i===0)
+                prevPeak={type:'P' ,indexes:[0]}
+            else
+                prevPeak=nodes[i-1];
+
+            if (i=== nodes.length -1)
+                nextPeak={type: 'P', indexes: [0]}
+            else nextPeak=nodes[i+1];
+
+            let diff = Math.abs(Math.max(...nextPeak.indexes)  - Math.min(... prevPeak.indexes));
+
+            console.log(`diff ${diff} for node ${i}  `);
+            if (diff > maxDiff )
+                maxDiff = diff
+        }
+        maxDiff= maxDiff + 1;
+        console.log('Max Diff ' + maxDiff);
+        return maxDiff;
     }
+
     //TODO When elements are SAME At the BEGIN/END??
-    function isPeak(i)
-    {
-        let num=A[i];
-        let left=i-1;
-        let right=i+1;
+    function isPeak(i) {
+        let num = A[i];
+        let left = i - 1;
+        let right = i + 1;
 
         //to Pass: GREATER than LEFT /RIGHT NEIGHBORS!
-        if (left >= 0 &&   num < A[left])
-        {
+        if (left >= 0 && num < A[left]) {
             return false;
         }
 
-        if (right < A.length && num < A[right] )
-        {
+        if (right < A.length && num < A[right]) {
             return false;
         }
         return true;
     }
 
-    function isValley(i)
-    {
-        let num=A[i];
-        let left=i-1;
-        let right=i+1;
+    function isValley(i) {
+        let num = A[i];
+        let left = i - 1;
+        let right = i + 1;
 
         //TO pass: SMALLER than LEFT /RIGHT NEIGHBORS!
-        if (left >= 0 &&   num > A[left])
-        {
+        if (left >= 0 && num > A[left]) {
             return false;
         }
 
-        if (right < A.length && num > A[right] )
-        {
+        if (right < A.length && num > A[right]) {
             return false;
         }
         return true;
     }
 
-    function findPrev(peak, indx)
-    {
-        if (indx ===0)
-            return 0;
-        for(let i=indx; i>-1;i--)
-        {
-            if (peak[i] < indx)
-                return peak[i];
-        }
-    }
 
-    function findNext(peak,indx)
-    {
-        if (indx > peak.length-1)
-            return 0;
-        for(let i=indx; i <peak.length;i++)
-        {
-            if (peak[i] > indx)
-                return peak[i];
-        }
-    }
 }
